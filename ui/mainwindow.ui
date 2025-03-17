@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Инспектор Аэропортов</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuUser">
+    <property name="title">
+     <string>Пользователь</string>
+    </property>
+    <addaction name="actionLogin"/>
+    <addaction name="actionRegister"/>
+    <addaction name="separator"/>
+    <addaction name="actionLogout"/>
+    <addaction name="actionProfile"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Помощь</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuUser"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFlightSearch"/>
+   <addaction name="actionAirportInfo"/>
+   <addaction name="separator"/>
+   <addaction name="actionProfile"/>
+   <addaction name="actionLogin"/>
+   <addaction name="actionLogout"/>
+  </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="actionLogin">
+   <property name="text">
+    <string>Вход</string>
+   </property>
+  </action>
+  <action name="actionRegister">
+   <property name="text">
+    <string>Регистрация</string>
+   </property>
+  </action>
+  <action name="actionLogout">
+   <property name="text">
+    <string>Выход из аккаунта</string>
+   </property>
+  </action>
+  <action name="actionProfile">
+   <property name="text">
+    <string>Профиль</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Справка</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
+  <action name="actionFlightSearch">
+   <property name="text">
+    <string>Flight Search</string>
+   </property>
+  </action>
+  <action name="actionAirportInfo">
+   <property name="text">
+    <string>Airport Info</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui> 

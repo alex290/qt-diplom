@@ -1,0 +1,18 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>icons/airplane.png</file>
+        <file>icons/airport.png</file>
+        <file>icons/search.png</file>
+        <file>icons/ticket.png</file>
+        <file>icons/user.png</file>
+        <file>icons/flight.png</file>
+        <file>icons/logo.png</file>
+        <file>icons/flight_search.png</file>
+        <file>icons/airport_info.png</file>
+        <file>icons/ticket_booking.png</file>
+        <file>icons/user_profile.png</file>
+        <file>icons/logout.png</file>
+        <file>styles/style.qss</file>
+    </qresource>
+</RCC> 

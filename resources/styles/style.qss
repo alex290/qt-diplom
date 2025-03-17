@@ -1,0 +1,120 @@
+/* Main application style */
+QMainWindow, QDialog {
+    background-color: #f5f5f5;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #1976D2;
+}
+
+QPushButton:pressed {
+    background-color: #0D47A1;
+}
+
+QPushButton:disabled {
+    background-color: #BDBDBD;
+    color: #757575;
+}
+
+/* Input fields */
+QLineEdit, QComboBox, QDateEdit {
+    border: 1px solid #BDBDBD;
+    border-radius: 4px;
+    padding: 6px;
+    background-color: white;
+}
+
+QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
+    border: 2px solid #2196F3;
+}
+
+/* Tables */
+QTableView {
+    border: 1px solid #BDBDBD;
+    background-color: white;
+    alternate-background-color: #f5f5f5;
+}
+
+QTableView::item:selected {
+    background-color: #2196F3;
+    color: white;
+}
+
+QHeaderView::section {
+    background-color: #E0E0E0;
+    padding: 4px;
+    border: 1px solid #BDBDBD;
+    font-weight: bold;
+}
+
+/* Tabs */
+QTabWidget::pane {
+    border: 1px solid #BDBDBD;
+    background-color: white;
+}
+
+QTabBar::tab {
+    background-color: #E0E0E0;
+    border: 1px solid #BDBDBD;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 6px 12px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: white;
+}
+
+QTabBar::tab:hover {
+    background-color: #EEEEEE;
+}
+
+/* Labels */
+QLabel {
+    color: #212121;
+}
+
+/* Status bar */
+QStatusBar {
+    background-color: #E0E0E0;
+    color: #212121;
+}
+
+/* Menu */
+QMenuBar {
+    background-color: #E0E0E0;
+}
+
+QMenuBar::item {
+    padding: 6px 12px;
+}
+
+QMenuBar::item:selected {
+    background-color: #BDBDBD;
+}
+
+QMenu {
+    background-color: white;
+    border: 1px solid #BDBDBD;
+}
+
+QMenu::item {
+    padding: 6px 24px 6px 12px;
+}
+
+QMenu::item:selected {
+    background-color: #2196F3;
+    color: white;
+} 
