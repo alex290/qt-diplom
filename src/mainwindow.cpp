@@ -269,8 +269,8 @@ void MainWindow::createCentralWidget()
     statusFrame->setFrameShadow(QFrame::Sunken);
     QHBoxLayout *statusLayout = new QHBoxLayout(statusFrame);
     
-    QLabel *dbStatusLabel = new QLabel("Статус подключения к БД:", statusFrame);
-    QLabel *dbStatusValueLabel = new QLabel("Подключено", statusFrame);
+    QLabel *dbStatusLabel = new QLabel("Статус подключения к PostgreSQL:", statusFrame);
+    QLabel *dbStatusValueLabel = new QLabel("Подключено к localhost:5432", statusFrame);
     dbStatusValueLabel->setStyleSheet("color: green; font-weight: bold;");
     
     statusLayout->addWidget(dbStatusLabel);
@@ -319,43 +319,7 @@ void MainWindow::createCentralWidget()
         }
     });
     
-    connect(viewAirportInfoButton, &QPushButton::clicked, [=]() {
-        QString airportCode = departureAirportComboBox->currentText();
-        if (!airportCode.isEmpty()) {
-            // Создание диалога информации об аэропорте
-            QDialog airportDialog(this);
-            airportDialog.setWindowTitle("Информация об аэропорте");
-            airportDialog.setMinimumSize(600, 400);
-            
-            QVBoxLayout *layout = new QVBoxLayout(&airportDialog);
-            
-            // Добавление виджета информации об аэропорте в диалог
-            layout->addWidget(airportInfoPage);
-            
-            // Извлечение кода аэропорта из строки формата "Название (КОД)"
-            QRegularExpression rx("\\(([A-Z]{3})\\)");
-            QRegularExpressionMatch match = rx.match(airportCode);
-            if (match.hasMatch()) {
-                QString code = match.captured(1);
-                // Загрузка информации об аэропорте
-                airportInfoPage->loadFlights(code);
-            }
-            
-            // Добавление кнопки закрытия
-            QHBoxLayout *buttonLayout = new QHBoxLayout();
-            QPushButton *closeButton = new QPushButton("Закрыть", &airportDialog);
-            buttonLayout->addStretch();
-            buttonLayout->addWidget(closeButton);
-            
-            layout->addLayout(buttonLayout);
-            
-            connect(closeButton, &QPushButton::clicked, &airportDialog, &QDialog::accept);
-            
-            airportDialog.exec();
-        } else {
-            QMessageBox::warning(this, "Предупреждение", "Пожалуйста, выберите аэропорт.");
-        }
-    });
+    connect(viewAirportInfoButton, &QPushButton::clicked, this, &MainWindow::showAirportInfo);
     
     connect(viewAirportLoadingButton, &QPushButton::clicked, this, &MainWindow::showAirportLoading);
     
@@ -397,69 +361,34 @@ void MainWindow::showFlightSearch()
 }
 
 /**
- * @brief Показать страницу информации об аэропортах
+ * @brief Показать информацию об аэропорте
  */
 void MainWindow::showAirportInfo()
 {
-    // Показать страницу информации об аэропортах
-    if (stackedWidget->currentIndex() == 1) {
-        // В новом интерфейсе нет необходимости выполнять дополнительные действия,
-        // так как информация об аэропортах отображается через диалоговое окно
-        
-        // Находим сплиттер
-        QWidget *appPage = qobject_cast<QWidget*>(stackedWidget->widget(1));
-        QVBoxLayout *appLayout = qobject_cast<QVBoxLayout*>(appPage->layout());
-        QSplitter *mainSplitter = qobject_cast<QSplitter*>(appLayout->itemAt(0)->widget());
-        
-        // Находим правую часть
-        QWidget *rightWidget = qobject_cast<QWidget*>(mainSplitter->widget(1));
-        
-        // Находим групповой бокс выбора аэропорта
-        QGroupBox *selectionGroupBox = qobject_cast<QGroupBox*>(rightWidget->layout()->itemAt(0)->widget());
-        
-        // Находим комбобокс выбора аэропорта вылета
-        QFormLayout *formLayout = qobject_cast<QFormLayout*>(selectionGroupBox->layout()->itemAt(0)->layout());
-        QComboBox *departureAirportComboBox = qobject_cast<QComboBox*>(formLayout->itemAt(0, QFormLayout::FieldRole)->widget());
-        
-        if (departureAirportComboBox && !departureAirportComboBox->currentText().isEmpty()) {
-            QString airportCode = departureAirportComboBox->currentText();
-            
-            // Создание диалога информации об аэропорте
-            QDialog airportDialog(this);
-            airportDialog.setWindowTitle("Информация об аэропорте");
-            airportDialog.setMinimumSize(600, 400);
-            
-            QVBoxLayout *layout = new QVBoxLayout(&airportDialog);
-            
-            // Добавление виджета информации об аэропорте в диалог
-            layout->addWidget(airportInfoPage);
-            
-            // Извлечение кода аэропорта из строки формата "Название (КОД)"
-            QRegularExpression rx("\\(([A-Z]{3})\\)");
-            QRegularExpressionMatch match = rx.match(airportCode);
-            if (match.hasMatch()) {
-                QString code = match.captured(1);
-                // Загрузка информации об аэропорте
-                airportInfoPage->loadFlights(code);
-            }
-            
-            // Добавление кнопки закрытия
-            QHBoxLayout *buttonLayout = new QHBoxLayout();
-            QPushButton *closeButton = new QPushButton("Закрыть", &airportDialog);
-            buttonLayout->addStretch();
-            buttonLayout->addWidget(closeButton);
-            
-            layout->addLayout(buttonLayout);
-            
-            connect(closeButton, &QPushButton::clicked, &airportDialog, &QDialog::accept);
-            
-            airportDialog.exec();
-        } else {
-            QMessageBox::warning(this, "Предупреждение", "Пожалуйста, выберите аэропорт.");
-        }
-        
-        statusLabel->setText("Информация об аэропорте");
-    }
+    // Создание диалога информации об аэропорте
+    QDialog airportDialog(this);
+    airportDialog.setWindowTitle("Информация об аэропорте");
+    airportDialog.setMinimumSize(600, 400);
+    
+    QVBoxLayout *layout = new QVBoxLayout(&airportDialog);
+    
+    // Добавление виджета информации об аэропорте в диалог
+    layout->addWidget(airportInfoPage);
+    
+    // Добавление кнопки закрытия
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    QPushButton *closeButton = new QPushButton("Закрыть", &airportDialog);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(closeButton);
+    
+    layout->addLayout(buttonLayout);
+    
+    connect(closeButton, &QPushButton::clicked, &airportDialog, &QDialog::accept);
+    
+    // Обновление строки состояния
+    statusLabel->setText("Информация об аэропорте");
+    
+    airportDialog.exec();
 }
 
 /**

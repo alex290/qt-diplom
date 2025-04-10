@@ -34,12 +34,16 @@ Database::~Database()
 
 bool Database::initialize()
 {
-    // Set up SQLite database
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("airport_inspector.db");
+    // Set up PostgreSQL database connection
+    db = QSqlDatabase::addDatabase("QPSQL");
+    db.setHostName("localhost");
+    db.setDatabaseName("airport_inspector");
+    db.setUserName("postgres");
+    db.setPassword("postgres");
+    db.setPort(5432);
     
     if (!db.open()) {
-        qDebug() << "Error opening database:" << db.lastError().text();
+        qDebug() << "Error opening PostgreSQL database:" << db.lastError().text();
         return false;
     }
     
@@ -69,7 +73,7 @@ void Database::createTables()
     
     // Create airports table
     query.exec("CREATE TABLE IF NOT EXISTS airports ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "id SERIAL PRIMARY KEY, "
                "code TEXT NOT NULL UNIQUE, "
                "name TEXT NOT NULL, "
                "city TEXT NOT NULL, "
@@ -81,7 +85,7 @@ void Database::createTables()
     
     // Create airlines table
     query.exec("CREATE TABLE IF NOT EXISTS airlines ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "id SERIAL PRIMARY KEY, "
                "code TEXT NOT NULL UNIQUE, "
                "name TEXT NOT NULL, "
                "country TEXT NOT NULL, "
@@ -89,44 +93,39 @@ void Database::createTables()
     
     // Create flights table
     query.exec("CREATE TABLE IF NOT EXISTS flights ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "id SERIAL PRIMARY KEY, "
                "flight_number TEXT NOT NULL, "
-               "airline_id INTEGER NOT NULL, "
-               "departure_airport_id INTEGER NOT NULL, "
-               "arrival_airport_id INTEGER NOT NULL, "
-               "departure_time DATETIME NOT NULL, "
-               "arrival_time DATETIME NOT NULL, "
+               "airline_id INTEGER NOT NULL REFERENCES airlines(id), "
+               "departure_airport_id INTEGER NOT NULL REFERENCES airports(id), "
+               "arrival_airport_id INTEGER NOT NULL REFERENCES airports(id), "
+               "departure_time TIMESTAMP NOT NULL, "
+               "arrival_time TIMESTAMP NOT NULL, "
                "price_economy REAL NOT NULL, "
                "price_business REAL NOT NULL, "
                "price_first REAL NOT NULL, "
                "available_seats_economy INTEGER NOT NULL, "
                "available_seats_business INTEGER NOT NULL, "
-               "available_seats_first INTEGER NOT NULL, "
-               "FOREIGN KEY (airline_id) REFERENCES airlines(id), "
-               "FOREIGN KEY (departure_airport_id) REFERENCES airports(id), "
-               "FOREIGN KEY (arrival_airport_id) REFERENCES airports(id))");
+               "available_seats_first INTEGER NOT NULL)");
     
     // Create users table
     query.exec("CREATE TABLE IF NOT EXISTS users ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "id SERIAL PRIMARY KEY, "
                "username TEXT NOT NULL UNIQUE, "
                "password TEXT NOT NULL, "
                "email TEXT NOT NULL, "
                "full_name TEXT NOT NULL, "
-               "registration_date DATETIME NOT NULL)");
+               "registration_date TIMESTAMP NOT NULL)");
     
     // Create bookings table
     query.exec("CREATE TABLE IF NOT EXISTS bookings ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "flight_id INTEGER NOT NULL, "
-               "user_id INTEGER NOT NULL, "
-               "booking_date DATETIME NOT NULL, "
+               "id SERIAL PRIMARY KEY, "
+               "flight_id INTEGER NOT NULL REFERENCES flights(id), "
+               "user_id INTEGER NOT NULL REFERENCES users(id), "
+               "booking_date TIMESTAMP NOT NULL, "
                "seat_class TEXT NOT NULL, "
                "passenger_name TEXT NOT NULL, "
                "passenger_passport TEXT NOT NULL, "
-               "status TEXT NOT NULL, "
-               "FOREIGN KEY (flight_id) REFERENCES flights(id), "
-               "FOREIGN KEY (user_id) REFERENCES users(id))");
+               "status TEXT NOT NULL)");
 }
 
 void Database::populateSampleData()
@@ -268,7 +267,7 @@ void Database::populateSampleData()
     QString hashedPassword = QString(hash.result().toHex());
     
     query.prepare("INSERT INTO users (username, password, email, full_name, registration_date) "
-                 "VALUES (?, ?, ?, ?, ?)");
+                 "VALUES (?, ?, ?, ?, ?) RETURNING id");
     query.addBindValue("user");
     query.addBindValue(hashedPassword);
     query.addBindValue("user@example.com");
@@ -484,7 +483,7 @@ int Database::bookTicket(int flightId, int userId, const QString& seatClass,
     // Create booking
     query.prepare("INSERT INTO bookings (flight_id, user_id, booking_date, seat_class, "
                  "passenger_name, passenger_passport, status) "
-                 "VALUES (?, ?, ?, ?, ?, ?, ?)");
+                 "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id");
     query.addBindValue(flightId);
     query.addBindValue(userId);
     query.addBindValue(QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -493,13 +492,14 @@ int Database::bookTicket(int flightId, int userId, const QString& seatClass,
     query.addBindValue(passengerPassport);
     query.addBindValue("Confirmed");
     
-    if (!query.exec()) {
+    int bookingId = -1;
+    if (query.exec() && query.next()) {
+        bookingId = query.value(0).toInt();
+    } else {
         qDebug() << "Error creating booking:" << query.lastError().text();
         db.rollback();
         return -1;
     }
-    
-    int bookingId = query.lastInsertId().toInt();
     
     // Commit transaction
     if (!db.commit()) {
@@ -580,15 +580,15 @@ int Database::registerUser(const QString& username, const QString& password,
     
     // Insert new user
     query.prepare("INSERT INTO users (username, password, email, full_name, registration_date) "
-                 "VALUES (?, ?, ?, ?, ?)");
+                 "VALUES (?, ?, ?, ?, ?) RETURNING id");
     query.addBindValue(username);
     query.addBindValue(hashedPassword);
     query.addBindValue(email);
     query.addBindValue(fullName);
     query.addBindValue(QDateTime::currentDateTime().toString(Qt::ISODate));
     
-    if (query.exec()) {
-        return query.lastInsertId().toInt();
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
     } else {
         qDebug() << "Error registering user:" << query.lastError().text();
         return -1;

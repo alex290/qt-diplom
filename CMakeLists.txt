@@ -9,6 +9,11 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network)
 
+# PostgreSQL support for Qt
+# You might need to adjust paths depending on your system
+find_package(PostgreSQL REQUIRED)
+include_directories(${PostgreSQL_INCLUDE_DIRS})
+
 set(PROJECT_SOURCES
     src/main.cpp
     src/mainwindow.cpp
@@ -43,6 +48,7 @@ target_link_libraries(AirportInspector PRIVATE
     Qt6::Widgets
     Qt6::Sql
     Qt6::Network
+    ${PostgreSQL_LIBRARIES}
 )
 
 # Install the executable

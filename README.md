@@ -15,6 +15,44 @@
 - CMake 3.16 или выше
 - Компилятор, совместимый с C++17
 
+## Зависимости
+
+- Qt 6.2 или выше
+- C++17 совместимый компилятор
+- CMake 3.16 или выше
+- PostgreSQL 12 или выше
+- libpq-dev (пакет разработки PostgreSQL)
+
+## Установка пакетов разработки
+
+### Debian/Ubuntu
+```
+sudo apt-get install -y libpq-dev
+```
+
+### Fedora/CentOS
+```
+sudo dnf install -y postgresql-devel
+```
+
+## Настройка базы данных PostgreSQL
+
+Перед запуском приложения необходимо настроить базу данных PostgreSQL:
+
+1. Установите PostgreSQL (если он ещё не установлен):
+   ```
+   sudo apt-get install -y postgresql postgresql-contrib
+   ```
+
+2. Создайте базу данных airport_inspector:
+   ```
+   sudo -u postgres psql
+   CREATE DATABASE airport_inspector;
+   CREATE USER postgres WITH PASSWORD 'postgres';
+   GRANT ALL PRIVILEGES ON DATABASE airport_inspector TO postgres;
+   ```
+3. Приложение автоматически создаст необходимые таблицы при первом запуске
+
 ## Сборка проекта
 
 1. Клонируйте репозиторий:
